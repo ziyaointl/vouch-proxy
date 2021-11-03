@@ -13,6 +13,7 @@ package cfg
 import (
 	"bytes"
 	"embed"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -48,6 +49,7 @@ type Config struct {
 	Domains       []string `mapstructure:"domains"`
 	WhiteList     []string `mapstructure:"whitelist"`
 	TeamWhiteList []string `mapstructure:"teamWhitelist"`
+	AllowedEmails []string `mapstructure:"allowed_emails"`
 	AllowAllUsers bool     `mapstructure:"allowAllUsers"`
 	PublicAccess  bool     `mapstructure:"publicAccess"`
 	TLS           struct {
@@ -208,7 +210,25 @@ func Configure() {
 		Cfg.Port = *CmdLine.port
 	}
 
+	loadDESIUsers()
+
 	logConfigIfDebug()
+}
+
+func loadDESIUsers() {
+	dat, err := os.ReadFile("Users.js")
+	if err != nil {
+		panic(err)
+	}
+	var users []interface{}
+	err = json.Unmarshal(dat, &users)
+	if err != nil {
+		panic(err)
+	}
+	for _, user := range users {
+		typed_user := user.(map[string]interface{})
+		Cfg.AllowedEmails = append(Cfg.AllowedEmails, typed_user["Email"].(string))
+	}
 }
 
 // using envconfig

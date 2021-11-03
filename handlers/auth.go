@@ -133,6 +133,16 @@ func verifyUser(u interface{}) (bool, error) {
 
 	switch {
 
+	// Custom DESI auth
+	case true:
+		for _, email := range cfg.Cfg.AllowedEmails {
+			if user.Email == email {
+				log.Debugf("verifyUser: Success! found user.Email in AllowedEmails: %s", user.Email)
+				return true, nil
+			}
+		}
+		return false, fmt.Errorf("verifyUser: user.Email not found in AllowedEmails: %s", user.Email)
+
 	// AllowAllUsers
 	case cfg.Cfg.AllowAllUsers:
 		log.Debugf("verifyUser: Success! skipping verification, cfg.Cfg.AllowAllUsers is %t", cfg.Cfg.AllowAllUsers)
