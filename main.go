@@ -161,6 +161,9 @@ func main() {
 	router.HandlerFunc(http.MethodGet, cfg.Cfg.DocumentRoot+"/validate", timelog.TimeLog(jwtmanager.JWTCacheHandler(authH)))
 	router.HandlerFunc(http.MethodGet, cfg.Cfg.DocumentRoot+"/_external-auth-:id", timelog.TimeLog(jwtmanager.JWTCacheHandler(authH)))
 
+	welcomeH := http.HandlerFunc(handlers.WelcomeHandler)
+	router.HandlerFunc(http.MethodGet, cfg.Cfg.DocumentRoot+"/welcome", timelog.TimeLog(welcomeH))
+
 	loginH := http.HandlerFunc(handlers.LoginHandler)
 	router.HandlerFunc(http.MethodGet, cfg.Cfg.DocumentRoot+"/login", timelog.TimeLog(loginH))
 
